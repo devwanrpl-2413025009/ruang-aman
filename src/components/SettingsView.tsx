@@ -1,13 +1,7 @@
 import { useState } from "react";
-import { motion } from "motion/react";
 import { 
   Accessibility, 
   Trash2, 
-  ShieldCheck, 
-  Sparkles, 
-  Layout, 
-  VolumeX,
-  Type,
   Sun,
   Moon
 } from "lucide-react";
@@ -25,7 +19,6 @@ export default function SettingsView({
   onUpdateSettings,
   onMasterReset,
 }: SettingsViewProps) {
-  const [showAudioFeedback, setShowAudioFeedback] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   
   const handleToggleDarkMode = () => {
@@ -40,10 +33,6 @@ export default function SettingsView({
       ...settings,
       textSize: size,
     });
-  };
-
-  const handleSimulateAudioCheck = () => {
-    setShowAudioFeedback(true);
   };
 
   return (
@@ -153,26 +142,7 @@ export default function SettingsView({
         </div>
       </section>
 
-      {/* 2. Audio & Silence (Modul Hening) */}
-      <section className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-outline-variant/20 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <VolumeX className="w-5 h-5 text-sage-primary" />
-          <h3 className="font-display font-bold text-base text-charcoal-dark">
-            Kontrol Audio &amp; Keamanan Sekitar
-          </h3>
-        </div>
-        <p className="font-sans text-xs text-charcoal-muted leading-relaxed">
-          Ruang Aman memprioritaskan privasi penuh di ruang publik kampus. Seluruh bimbingan, alarm panic button, dan guide pernapasan berjalan secara hening tanpa mengejutkan teman-teman di sekitar Anda.
-        </p>
-        <button
-          onClick={handleSimulateAudioCheck}
-          className="self-start text-xs font-bold text-sage-primary hover:underline flex items-center gap-1 cursor-pointer mt-1"
-        >
-          Tes Status Audio Aplikasi →
-        </button>
-      </section>
-
-      {/* 3. Privacy & Clear master data */}
+      {/* 2. Privacy & Clear master data */}
       <section className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-outline-variant/20 flex flex-col gap-6">
         <div className="flex items-center gap-3 border-b border-outline-variant/10 pb-4">
           <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-coral-panic border border-red-200">
@@ -203,14 +173,6 @@ export default function SettingsView({
           </button>
         </div>
       </section>
-
-      {/* Audio feedback */}
-      <FeedbackModal
-        isOpen={showAudioFeedback}
-        title="Mode Hening"
-        message="Simulasi Suara: Ruang Aman berjalan dalam Mode Hening (Silent Mode) secara standar untuk kenyamanan, kedamaian, dan kerahasiaan Anda di tempat umum."
-        onClose={() => setShowAudioFeedback(false)}
-      />
 
       {/* Confirm master reset */}
       <FeedbackModal

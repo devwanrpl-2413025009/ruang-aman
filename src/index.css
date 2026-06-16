@@ -58,7 +58,40 @@ html, body {
   background: #a9adad;
 }
 
-/* Custom styles for animations & bento */
+/* ─── Font Size Scaling ─────────────────────────────────────────────────── */
+html.text-size-besar { font-size: 125%; }
+
+html.text-size-ekstra-besar { font-size: 150%; }
+
+/* ─── Dark Mode Overrides ────────────────────────────────────────────────── */
+html.dark body { background-color: #0f172a; color: #f1f5f9; }
+
+html.dark body * {
+  --tw-bg-opacity: 1;
+  --tw-text-opacity: 1;
+}
+
+html.dark .bg-white { background-color: #1e293b; }
+
+html.dark .bg-background-soft { background-color: #0f172a; }
+
+html.dark .text-charcoal-dark { color: #f1f5f9; }
+
+html.dark .text-charcoal-muted { color: #94a3b8; }
+
+html.dark .border-outline-variant { border-color: rgba(255, 255, 255, 0.15) !important; }
+
+html.dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.15); }
+
+html.dark .border-red-200 { border-color: rgba(239, 68, 68, 0.3); }
+
+html.dark .hover\:bg-background-soft:hover { background-color: #1e293b; }
+
+html.dark .hover\:bg-sage-light\/25:hover { background-color: rgba(84, 98, 90, 0.25); }
+
+html.dark .hover\:text-charcoal-dark:hover { color: #f1f5f9; }
+
+/* ─── Custom styles for animations & bento ───────────────────────────────── */
 @layer utilities {
   .safe-shadow {
     box-shadow: 0 4px 20px rgba(9, 29, 46, 0.05);

@@ -44,6 +44,14 @@ export default function App() {
       : { darkMode: false, textSize: "normal" };
   });
 
+  // Sync dark mode & font size to <html> element
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", settings.darkMode);
+    document.documentElement.classList.remove("text-size-besar", "text-size-ekstra-besar");
+    if (settings.textSize === "besar") document.documentElement.classList.add("text-size-besar");
+    if (settings.textSize === "ekstra-besar") document.documentElement.classList.add("text-size-ekstra-besar");
+  }, [settings.darkMode, settings.textSize]);
+
   // Redirect to HOME when role doesn't match current view
   useEffect(() => {
     if (
@@ -249,16 +257,9 @@ export default function App() {
     showFeedback("Seluruh data, riwayat curhat, dan pengaturan telah bersih total. Anonimus ID baru dibuat.", "Reset Berhasil");
   };
 
-  // Map typography size controls based on app settings
-  const getTextSizeClass = () => {
-    if (settings.textSize === "besar") return "text-[108%]";
-    if (settings.textSize === "ekstra-besar") return "text-[116%]";
-    return "";
-  };
-
   return (
     <div
-      className={`min-h-screen flex flex-col transition-colors duration-300 ${getTextSizeClass()} ${
+      className={`min-h-screen flex flex-col transition-colors duration-300 ${
         settings.darkMode ? "bg-slate-950 text-slate-100" : "bg-background-soft text-charcoal-dark"
       }`}
     >
