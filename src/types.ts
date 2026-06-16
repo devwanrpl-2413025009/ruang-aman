@@ -19,10 +19,12 @@ export interface Message {
 
 export interface StudentSession {
   id: string;
-  name: string; // Sobat_xxxx
-  waitingSince: string; // duration
+  name: string;
+  waitingSince: string;
   status: "waiting" | "active" | "completed";
   unreadCount: number;
+  counselorNip?: string;
+  counselorName?: string;
 }
 
 export interface EmergencyContact {

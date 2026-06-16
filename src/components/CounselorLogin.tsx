@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 interface CounselorLoginProps {
-  onLoginSuccess: (counselorName: string) => void;
+  onLoginSuccess: (counselorName: string, counselorNip: string) => void;
   onActivateBK: () => void;
   onCancel: () => void;
 }
@@ -46,7 +46,7 @@ export default function CounselorLogin({ onLoginSuccess, onActivateBK, onCancel 
         throw new Error(data.error || "Login gagal");
       }
 
-      onLoginSuccess(data.name);
+      onLoginSuccess(data.name, data.nip);
       onActivateBK();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal terhubung ke server");

@@ -17,6 +17,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<AppView>(AppView.HOME);
   const [isCounselorLoggedIn, setIsCounselorLoggedIn] = useState(false);
   const [counselorName, setCounselorName] = useState("");
+  const [counselorNip, setCounselorNip] = useState("");
 
   // Student Anonymous ID Generation
   const [studentId, setStudentId] = useState<string>(() => {
@@ -305,11 +306,12 @@ export default function App() {
               studentId={studentId}
               messages={messages}
               counselorName={counselorName}
+              counselorNip={counselorNip}
               onLogout={handleRoleLogout}
             />
           ) : (
             <CounselorLogin
-              onLoginSuccess={(name) => { setCounselorName(name); setIsCounselorLoggedIn(true); }}
+              onLoginSuccess={(name, nip) => { setCounselorName(name); setCounselorNip(nip); setIsCounselorLoggedIn(true); }}
               onActivateBK={handleActivateBK}
               onCancel={() => setCurrentView(AppView.HOME)}
             />

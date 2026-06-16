@@ -5,6 +5,8 @@ import {
   Send, 
   MessageSquare,
   CheckCheck,
+  Lock,
+  Unlock,
 } from "lucide-react";
 import { Message, StudentSession } from "../types";
 
@@ -12,6 +14,7 @@ interface CounselorViewProps {
   studentId: string;
   messages: Message[];
   counselorName: string;
+  counselorNip: string;
   onLogout: () => void;
 }
 
@@ -20,12 +23,15 @@ interface QueueItem {
   name: string;
   status: string;
   created_at: string;
+  counselor_nip?: string;
+  counselor_name?: string;
 }
 
 export default function CounselorView({
   studentId,
   messages: propMessages,
   counselorName,
+  counselorNip,
   onLogout,
 }: CounselorViewProps) {
   const [counselorOnline, setCounselorOnline] = useState(true);
@@ -36,6 +42,8 @@ export default function CounselorView({
   // API-driven queue and messages
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [selectedMessages, setSelectedMessages] = useState<Message[]>(propMessages);
+  const [sessionCounselorNip, setSessionCounselorNip] = useState<string | null>(null);
+  const [sessionCounselorName, setSessionCounselorName] = useState<string | null>(null);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
@@ -69,17 +77,19 @@ export default function CounselorView({
   const fetchStudentMessages = useCallback(async () => {
     if (!selectedStudentId) return;
     try {
-      const res = await fetch(`/api/chat/history?studentId=${selectedStudentId}&counselor=true`);
+      const res = await fetch(`/api/chat/history?studentId=${selectedStudentId}&counselor_nip=${counselorNip}`);
       if (res.ok) {
         const data = await res.json();
         if (data.messages) {
           setSelectedMessages(data.messages);
+          setSessionCounselorNip(data.session_counselor_nip);
+          setSessionCounselorName(data.session_counselor_name);
         }
       }
     } catch {
       // Keep existing messages
     }
-  }, [selectedStudentId]);
+  }, [selectedStudentId, counselorNip]);
 
   // Initial fetch + polling
   useEffect(() => { fetchQueue(); }, [fetchQueue]);
@@ -142,6 +152,12 @@ export default function CounselorView({
     prevMessagesLength.current = msgLen;
   }, [selectedMessages, selectedStudentId]);
 
+  // Reset session counselor info when selected student changes
+  useEffect(() => {
+    setSessionCounselorNip(null);
+    setSessionCounselorName(null);
+  }, [selectedStudentId]);
+
   // Update selectedMessages when propMessages change (for current studentId)
   useEffect(() => {
     if (selectedStudentId === studentId) {
@@ -171,10 +187,40 @@ export default function CounselorView({
       await fetch("/api/counselor/message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentId: selectedStudentId, text: modelMessage.text, timestamp }),
+        body: JSON.stringify({ studentId: selectedStudentId, text: modelMessage.text, timestamp, counselor_nip: counselorNip }),
       });
     } catch {
       console.warn("Counselor message API failed, saved locally.");
+    }
+  };
+
+  const isOtherCounselorSession = sessionCounselorNip !== null && sessionCounselorNip !== counselorNip;
+
+  const handleReleaseSession = async () => {
+    try {
+      await fetch("/api/counselor/release-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId: selectedStudentId, counselor_nip: counselorNip }),
+      });
+      setSessionCounselorNip(null);
+      setSessionCounselorName(null);
+    } catch {
+      console.warn("Failed to release session");
+    }
+  };
+
+  const handleTakeover = async () => {
+    try {
+      await fetch("/api/counselor/takeover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId: selectedStudentId, counselor_nip: counselorNip }),
+      });
+      setSessionCounselorNip(counselorNip);
+      setSessionCounselorName(counselorName);
+    } catch {
+      console.warn("Failed to take over session");
     }
   };
 
@@ -188,6 +234,8 @@ export default function CounselorView({
     waitingSince: item.status === "active" ? "Sedang Aktif" : "Menunggu",
     status: item.status as "waiting" | "active" | "completed",
     unreadCount: 0,
+    counselorNip: item.counselor_nip,
+    counselorName: item.counselor_name,
   }));
 
   return (
@@ -302,6 +350,16 @@ export default function CounselorView({
                     <span className="font-sans text-xs md:text-sm font-bold text-charcoal-dark">
                       {student.name}
                     </span>
+                    {student.counselorName && student.counselorNip === counselorNip && (
+                      <span className="text-[9px] font-mono font-bold text-sage-primary bg-sage-light px-2 py-0.5 rounded-full flex items-center gap-1">
+                        Saya
+                      </span>
+                    )}
+                    {student.counselorName && student.counselorNip !== counselorNip && (
+                      <span className="text-[9px] font-mono font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <Lock className="w-3 h-3" /> {student.counselorName}
+                      </span>
+                    )}
                     {student.unreadCount > 0 && (
                       <span className="bg-coral-panic text-white text-[9px] font-black px-1.5 py-0.2 rounded-full animate-pulse">
                         {student.unreadCount}
@@ -337,13 +395,35 @@ export default function CounselorView({
                S
             </div>
             <div>
-              <h3 className="font-sans font-bold text-sm md:text-base text-charcoal-dark">
+              <h3 className="font-sans font-bold text-sm md:text-base text-charcoal-dark flex items-center gap-2">
                 Sesi Curhat: {selectedStudentId}
+                {sessionCounselorNip === counselorNip && (
+                  <button
+                    onClick={handleReleaseSession}
+                    className="text-[10px] font-mono font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-full transition-colors cursor-pointer"
+                    title="Lepaskan sesi ini"
+                  >
+                    <Unlock className="w-3 h-3 inline mr-1" />Lepaskan
+                  </button>
+                )}
               </h3>
               <p className="font-sans text-xs text-charcoal-muted font-medium flex items-center gap-1.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-sage-primary"></span>
                  Anonim • Dosen BK Terhubung Secara Aman
               </p>
+              {isOtherCounselorSession && (
+                <p className="flex items-center gap-1.5 mt-1">
+                  <span className="text-[10px] font-mono font-bold text-amber-600 flex items-center gap-1">
+                    <Lock className="w-3 h-3" /> Ditangani oleh {sessionCounselorName || "Konselor lain"}
+                  </span>
+                  <button
+                    onClick={handleTakeover}
+                    className="text-[10px] font-mono font-bold text-blue-600 hover:text-blue-800 underline transition-colors cursor-pointer"
+                  >
+                    Ambil Alih
+                  </button>
+                </p>
+              )}
             </div>
           </div>
           </div>
@@ -399,20 +479,34 @@ export default function CounselorView({
         )}
 
         <div className="p-4 border-t border-outline-variant/20 bg-white">
+          {isOtherCounselorSession && (
+            <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-2">
+              <Lock className="w-4 h-4 text-amber-600 shrink-0" />
+              <p className="text-[11px] font-sans text-amber-700 font-medium">
+                Session ini sedang ditangani oleh <strong>{sessionCounselorName || "Konselor lain"}</strong>. Anda tidak dapat mengirim pesan.
+              </p>
+            </div>
+          )}
           <form onSubmit={handleSend} className="flex gap-2 p-2 bg-background-soft border rounded-xl items-center focus-within:border-sage-primary transition-all">
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder={displayedMessages.length === 0 ? "Tunggu mahasiswa mulai curhat..." : "Balas bimbingan konseling dengan empati..."}
-              disabled={displayedMessages.length === 0}
+              placeholder={
+                isOtherCounselorSession
+                  ? "Tidak dapat mengirim pesan — session milik konselor lain"
+                  : displayedMessages.length === 0
+                    ? "Tunggu mahasiswa mulai curhat..."
+                    : "Balas bimbingan konseling dengan empati..."
+              }
+              disabled={displayedMessages.length === 0 || isOtherCounselorSession}
               className="flex-1 bg-transparent px-2.5 text-xs md:text-sm text-charcoal-dark border-none outline-none focus:outline-none focus:ring-0"
             />
             <button
               type="submit"
-              disabled={!inputText.trim()}
+              disabled={!inputText.trim() || isOtherCounselorSession}
               className={`p-3 rounded-lg text-white font-semibold flex items-center justify-center transition-all cursor-pointer ${
-                inputText.trim() ? "bg-sage-primary hover:bg-sage-dark hover:scale-105" : "bg-outline-variant/40"
+                inputText.trim() && !isOtherCounselorSession ? "bg-sage-primary hover:bg-sage-dark hover:scale-105" : "bg-outline-variant/40"
               }`}
             >
               <Send className="w-4 h-4" />

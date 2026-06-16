@@ -57,6 +57,9 @@ async function initSchema() {
     ALTER TABLE messages ADD COLUMN IF NOT EXISTS read_at TIMESTAMP
   `);
   await pool.query(`
+    ALTER TABLE sessions ADD COLUMN IF NOT EXISTS counselor_nip VARCHAR(20) REFERENCES counselors(nip)
+  `);
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS counselors (
       nip VARCHAR(20) PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
@@ -105,10 +108,18 @@ app.get("/api/health", (_req, res) => {
 app.get("/api/chat/history", async (req, res) => {
   try {
     const studentId = (req.query.studentId as string) || "Anonimus_8891";
-    const isCounselor = req.query.counselor === "true";
+    const counselorNip = req.query.counselor_nip as string | undefined;
+
+    // Auto-assign session if a counselor is fetching and session is unassigned
+    if (counselorNip) {
+      await pool.query(
+        `UPDATE sessions SET counselor_nip = $1 WHERE id = $2 AND counselor_nip IS NULL`,
+        [counselorNip, studentId]
+      );
+    }
 
     // Auto-mark messages as read based on who is fetching
-    if (isCounselor) {
+    if (counselorNip) {
       await pool.query(
         `UPDATE messages SET read_at = NOW() WHERE session_id = $1 AND role = 'user' AND read_at IS NULL`,
         [studentId]
@@ -125,7 +136,22 @@ app.get("/api/chat/history", async (req, res) => {
       [studentId]
     );
 
-    res.json({ messages: result.rows });
+    // Get session counselor info
+    const sessionResult = await pool.query(
+      `SELECT s.counselor_nip, c.name AS counselor_name
+       FROM sessions s
+       LEFT JOIN counselors c ON s.counselor_nip = c.nip
+       WHERE s.id = $1`,
+      [studentId]
+    );
+
+    const sessionRow = sessionResult.rows[0] as { counselor_nip?: string; counselor_name?: string } | undefined;
+
+    res.json({
+      messages: result.rows,
+      session_counselor_nip: sessionRow?.counselor_nip || null,
+      session_counselor_name: sessionRow?.counselor_name || null,
+    });
   } catch (error) {
     console.error("Error fetching chat history:", error);
     res.status(500).json({ error: "Failed to fetch chat history" });
@@ -168,7 +194,10 @@ app.post("/api/chat", async (req, res) => {
 app.get("/api/counselor/queue", async (_req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, name, status, created_at FROM sessions ORDER BY created_at DESC`
+      `SELECT s.id, s.name, s.status, s.created_at, s.counselor_nip, c.name AS counselor_name
+       FROM sessions s
+       LEFT JOIN counselors c ON s.counselor_nip = c.nip
+       ORDER BY s.created_at DESC`
     );
     res.json({ queue: result.rows });
   } catch (error) {
@@ -180,9 +209,35 @@ app.get("/api/counselor/queue", async (_req, res) => {
 // Counselor Send Message
 app.post("/api/counselor/message", async (req, res) => {
   try {
-    const { studentId, text, timestamp } = req.body;
+    const { studentId, text, timestamp, counselor_nip } = req.body;
     if (!studentId || !text) {
       return res.status(400).json({ error: "studentId and text are required" });
+    }
+    if (!counselor_nip) {
+      return res.status(400).json({ error: "counselor_nip is required" });
+    }
+
+    // Auto-assign if session is unassigned
+    await pool.query(
+      `UPDATE sessions SET counselor_nip = $1 WHERE id = $2 AND counselor_nip IS NULL`,
+      [counselor_nip, studentId]
+    );
+
+    // Validate assignment
+    const sessionResult = await pool.query(
+      `SELECT counselor_nip FROM sessions WHERE id = $1`,
+      [studentId]
+    );
+
+    const sessionRow2 = sessionResult.rows[0] as { counselor_nip?: string } | undefined;
+    const assignedNip = sessionRow2?.counselor_nip;
+    if (assignedNip && assignedNip !== counselor_nip) {
+      const counselorResult = await pool.query(
+        `SELECT name FROM counselors WHERE nip = $1`,
+        [assignedNip]
+      );
+      const handlerName = (counselorResult.rows[0] as { name: string } | undefined)?.name || "Konselor lain";
+      return res.status(403).json({ error: `Session ini sedang ditangani oleh ${handlerName}`, blocked: true });
     }
 
     const ts = timestamp || String(Date.now());
@@ -197,6 +252,46 @@ app.post("/api/counselor/message", async (req, res) => {
   } catch (error) {
     console.error("Error sending counselor message:", error);
     res.status(500).json({ error: "Failed to send message" });
+  }
+});
+
+// Counselor Release Session
+app.post("/api/counselor/release-session", async (req, res) => {
+  try {
+    const { studentId, counselor_nip } = req.body;
+    if (!studentId || !counselor_nip) {
+      return res.status(400).json({ error: "studentId and counselor_nip are required" });
+    }
+
+    await pool.query(
+      `UPDATE sessions SET counselor_nip = NULL WHERE id = $1 AND counselor_nip = $2`,
+      [studentId, counselor_nip]
+    );
+
+    res.json({ success: true, message: "Session released" });
+  } catch (error) {
+    console.error("Error releasing session:", error);
+    res.status(500).json({ error: "Failed to release session" });
+  }
+});
+
+// Counselor Takeover Session
+app.post("/api/counselor/takeover", async (req, res) => {
+  try {
+    const { studentId, counselor_nip } = req.body;
+    if (!studentId || !counselor_nip) {
+      return res.status(400).json({ error: "studentId and counselor_nip are required" });
+    }
+
+    await pool.query(
+      `UPDATE sessions SET counselor_nip = $1 WHERE id = $2`,
+      [counselor_nip, studentId]
+    );
+
+    res.json({ success: true, message: "Session taken over" });
+  } catch (error) {
+    console.error("Error taking over session:", error);
+    res.status(500).json({ error: "Failed to take over session" });
   }
 });
 
@@ -225,7 +320,7 @@ app.post("/api/counselor/login", async (req, res) => {
       return res.status(401).json({ error: "NIP atau kata sandi salah" });
     }
 
-    res.json({ success: true, name });
+    res.json({ success: true, name, nip });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ error: "Internal server error" });
