@@ -68,7 +68,7 @@ export default function LandingView({
           <div className="relative z-10 flex flex-col items-center text-center gap-6">
             {/* Mascot circular icon */}
             <div className="w-16 h-16 bg-[#e3efff] rounded-full flex items-center justify-center text-sage-primary shadow-inner mb-1">
-              <KeyRound className="w-8 h-8 text-[#576062]" />
+              <KeyRound className="w-8 h-8 text-charcoal-muted" />
             </div>
 
             <div className="flex flex-col gap-1 w-full">

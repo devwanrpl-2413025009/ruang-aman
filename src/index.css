@@ -99,6 +99,16 @@ html.dark .bg-\[#f8fbfc\] { background-color: #0f172a; }
 
 html.dark .bg-\[#fbfdfd\] { background-color: #0f172a; }
 
+html.dark .bg-\[#f7f9ff\] { background-color: #1e293b; }
+
+html.dark .bg-\[#fdfdfd\] { background-color: #1e293b; }
+
+html.dark .hover\:bg-\[#e3efff\]:hover { background-color: #1e2a3a; }
+
+html.dark .text-sage-primary { color: #a3c4b5; }
+
+
+
 /* ─── Custom styles for animations & bento ───────────────────────────────── */
 @layer utilities {
   .safe-shadow {

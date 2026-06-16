@@ -227,36 +227,36 @@ export default function ChatView({
           </div>
         </div>
 
-        {/* Floating Suggested Responses to keep user interactive */}
+        {/* Floating Suggested Responses */}
         {messages.length < 5 && (
-          <div className="px-4 md:px-6 py-2 bg-white flex flex-nowrap md:flex-wrap gap-2 overflow-x-auto md:overflow-visible border-t border-outline-variant/10 scrollbar-hide">
-            <span className="text-[10px] text-outline font-mono uppercase shrink-0 self-center sticky left-0 bg-white z-10 pr-1">Pintas Curhat:</span>
+          <div className="px-4 md:px-6 py-1.5 md:py-2 bg-white flex flex-wrap gap-1.5 md:gap-2 border-t border-outline-variant/10">
+            <span className="hidden sm:inline text-[10px] text-outline font-mono uppercase shrink-0 self-center">Pintas:</span>
             <button
               onClick={() => {
                 setInputText("Saya sangat cemas dengan skripsi dan tugas akhir akhir-akhir ini, tidak sanggup mengerjakannya lagi.");
                 textareaRef.current?.focus();
               }}
-              className="text-xs border border-outline-variant/30 hover:border-sage-primary hover:bg-background-soft px-3 py-1 rounded-full text-charcoal-muted font-medium transition-all"
+              className="border border-outline-variant/30 hover:border-sage-primary hover:bg-background-soft px-2 md:px-3 py-0.5 md:py-1 rounded-full text-charcoal-muted font-medium transition-all text-[10px] md:text-xs"
             >
-              📝 Cemas skripsi/tugas akhir
+              📝 Cemas skripsi
             </button>
             <button
               onClick={() => {
                 setInputText("Susah tidur beberapa minggu ini karena kepala selalu berisik memikirkan masa depan.");
                 textareaRef.current?.focus();
               }}
-              className="text-xs border border-outline-variant/30 hover:border-sage-primary hover:bg-background-soft px-3 py-1 rounded-full text-charcoal-muted font-medium transition-all"
+              className="border border-outline-variant/30 hover:border-sage-primary hover:bg-background-soft px-2 md:px-3 py-0.5 md:py-1 rounded-full text-charcoal-muted font-medium transition-all text-[10px] md:text-xs"
             >
-              💤 Susah tidur &amp; pikiran berisik
+              💤 Susah tidur
             </button>
             <button
               onClick={() => {
                 setInputText("Saya merasa sangat sepi, tertekan menghadapi ekspektasi keluarga, rasanya ingin menyerah.");
                 textareaRef.current?.focus();
               }}
-              className="text-xs border border-outline-variant/30 hover:border-sage-primary hover:bg-background-soft px-3 py-1 rounded-full text-charcoal-muted font-medium transition-all"
+              className="border border-outline-variant/30 hover:border-sage-primary hover:bg-background-soft px-2 md:px-3 py-0.5 md:py-1 rounded-full text-charcoal-muted font-medium transition-all text-[10px] md:text-xs"
             >
-              🍃 Kesepian &amp; tertekan keluarga
+              🍃 Kesepian
             </button>
           </div>
         )}

@@ -162,7 +162,7 @@ export default function CounselorView({
         <div className="p-5 border-b border-outline-variant/20 bg-[#f8fbfc]">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h2 className="font-display font-extrabold text-[#576062] text-lg select-none">
+              <h2 className="font-display font-extrabold text-charcoal-muted text-lg select-none">
                 Student Queue
               </h2>
               <p className="text-[11px] font-mono uppercase text-outline tracking-wider font-extrabold">
