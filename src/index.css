@@ -105,9 +105,13 @@ html.dark .bg-\[\#fdfdfd\] { background-color: #1e293b; }
 
 html.dark .hover\:bg-\[\#e3efff\]:hover { background-color: #1e2a3a; }
 
-html.dark .text-sage-primary { color: #a3c4b5; }
+html.dark .text-sage-primary { color: #d1e6dc; }
 
+html.dark .bg-white\/80 { background-color: rgba(30, 41, 59, 0.8); }
 
+html.dark .bg-white\/95 { background-color: rgba(30, 41, 59, 0.95); }
+
+html.dark .text-sage-dark { color: #cbd5e1; }
 
 /* ─── Custom styles for animations & bento ───────────────────────────────── */
 @layer utilities {
