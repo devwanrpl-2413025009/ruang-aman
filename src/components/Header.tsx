@@ -20,23 +20,23 @@ export default function Header({
 }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant/30 transition-all">
-      <div className="grid grid-cols-3 items-center px-4 md:px-20 py-4 max-w-7xl mx-auto w-full">
-        {/* Brand Group - Left */}
+      <div className="flex items-center justify-between px-4 md:px-20 py-2 md:py-4 max-w-7xl mx-auto w-full">
+        {/* Brand Group */}
         <button
           onClick={() => onNavigate(AppView.HOME)}
-          className="justify-self-start flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity text-left"
+          className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity text-left shrink-0"
           id="nav-logo"
         >
           <img
             src="/logo-unila.png"
             alt="Logo Unila"
-            className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border border-sage-light"
+            className="w-7 h-7 md:w-10 md:h-10 rounded-full object-cover border border-sage-light"
           />
-          <div>
-            <h1 className="font-display font-extrabold text-lg md:text-xl text-charcoal-dark tracking-tight leading-none">
+          <div className="hidden sm:block">
+            <h1 className="font-display font-extrabold text-sm md:text-xl text-charcoal-dark tracking-tight leading-none">
               Ruang Aman BK Unila
             </h1>
-            <span className="text-[10px] uppercase font-mono tracking-wider text-sage-primary block">
+            <span className="text-[9px] md:text-[10px] uppercase font-mono tracking-wider text-sage-primary block">
               {userRole === "bk" ? "BK atau Staff Terhubung" : "Safe Haven"}
             </span>
           </div>
@@ -44,7 +44,7 @@ export default function Header({
 
         {/* Main Navigation - Center */}
         {userRole !== "bk" && (
-        <nav className="hidden md:flex items-center justify-self-center gap-1 bg-background-soft p-1 rounded-full border border-outline-variant/20">
+        <nav className="hidden md:flex items-center gap-1 bg-background-soft p-1 rounded-full border border-outline-variant/20">
           <button
             onClick={() => onNavigate(AppView.HOME)}
             className={`px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all ${
@@ -94,17 +94,16 @@ export default function Header({
         </nav>
         )}
 
-        {/* Global Toolbar - Right */}
-        <div className="flex items-center justify-self-end gap-2 md:gap-4">
-          {/* Panic Button */}
+        {/* Global Toolbar */}
+        <div className="flex items-center gap-2">
+          {/* Panic Button - hidden on mobile (bottom nav handles it) */}
           <button
             onClick={onOpenEmergency}
-            className="bg-coral-pink hover:bg-[#ffc6c1] text-coral-dark-text font-semibold text-xs rounded-full px-4 md:px-5 py-2 md:py-3 shadow-sm hover:shadow transition-all flex items-center gap-2 cursor-pointer border border-[#ffa8a1]"
+            className="hidden md:flex bg-coral-pink hover:bg-[#ffc6c1] text-coral-dark-text font-semibold text-xs rounded-full px-5 py-3 shadow-sm hover:shadow transition-all items-center gap-2 cursor-pointer border border-[#ffa8a1]"
             id="btn-panic-header"
           >
             <ShieldAlert className="w-4 h-4 fill-current animate-pulse text-coral-panic" />
-            <span className="hidden sm:inline">PANIC BUTTON / HOTLINE DARURAT</span>
-            <span className="sm:hidden">PANIC BUTTON</span>
+            <span>PANIC BUTTON / HOTLINE DARURAT</span>
           </button>
 
           {/* Settings / Profile Trigger */}
