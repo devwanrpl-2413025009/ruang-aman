@@ -2,10 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   Send, 
-  Paperclip, 
   Trash2, 
   Lock, 
-  Compass, 
   Sparkles, 
   ShieldCheck, 
   Menu,
@@ -74,17 +72,15 @@ export default function ChatView({
     }
   };
 
-  // Add mock file upload trigger
-  const [pickedFile, setPickedFile] = useState<string | null>(null);
-  const handleFileUpload = () => {
-    const mockFiles = [
-      "Screenshot_KRS.png",
-      "Draft_Tugas_Akhir_v3_rev.docx",
-      "Hasil_Konsultasi_Dulu.pdf",
-    ];
-    const picked = mockFiles[Math.floor(Math.random() * mockFiles.length)];
-    setPickedFile(picked);
-  };
+  function formatTimestamp(ts: string): string {
+    const ms = Number(ts);
+    if (isNaN(ms)) return ts;
+    return new Date(ms).toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Jakarta",
+    }) + " WIB";
+  }
 
   return (
     <div className="flex-grow flex flex-col max-w-5xl mx-auto w-full px-4 h-[calc(100vh-180px)] md:h-[calc(100vh-100px)] min-h-[50vh] md:min-h-[600px]">
@@ -181,18 +177,11 @@ export default function ChatView({
                           : "bg-white text-charcoal-dark rounded-bl-sm border border-outline-variant/30 shadow-sm"
                       }`}
                     >
-                      {msg.text.startsWith("[Lampiran Dokumen Anonim:") ? (
-                        <div className="flex items-center gap-2 border border-dashed border-sage-primary p-2.5 rounded-lg bg-background-soft">
-                          <Compass className="w-5 h-5 text-sage-primary shrink-0" />
-                          <span className="font-semibold text-xs font-mono">{msg.text}</span>
-                        </div>
-                      ) : (
-                        <p className="whitespace-pre-line">{msg.text}</p>
-                      )}
+                      <p className="whitespace-pre-line">{msg.text}</p>
                     </div>
 
                     <span className="text-[10px] text-charcoal-muted mt-0.5 mx-1.5 flex items-center gap-1">
-                      {msg.timestamp}
+                      {formatTimestamp(msg.timestamp)}
                       {isUser && <CheckCheck className="w-3 h-3 text-sage-primary" />}
                     </span>
                   </div>
@@ -264,15 +253,6 @@ export default function ChatView({
         {/* Bottom Input Drawer */}
         <div className="bg-white border-t border-outline-variant/30 p-4">
           <form onSubmit={handleSend} className="flex items-end gap-3 max-w-4xl mx-auto bg-[#f8fbfc] rounded-2xl border border-outline-variant/50 p-2.5 focus-within:border-sage-primary focus-within:ring-1 focus-within:ring-sage-primary/50 transition-all shadow-inner">
-            <button
-              type="button"
-              onClick={handleFileUpload}
-              className="p-3 text-charcoal-muted hover:text-sage-primary transition-colors rounded-full hover:bg-white flex-shrink-0 cursor-pointer"
-              title="Unggah KRS, berkas skripsi, atau lampiran secara anonim"
-            >
-              <Paperclip className="w-5 h-5" />
-            </button>
-
             <textarea
               ref={textareaRef}
               rows={1}
@@ -320,20 +300,6 @@ export default function ChatView({
         cancelLabel="Batal"
         onClose={() => setShowClearConfirm(false)}
         onConfirm={onClearHistory}
-      />
-
-      {/* Confirm file upload */}
-      <FeedbackModal
-        isOpen={pickedFile !== null}
-        variant="confirm"
-        title="Unggah Dokumen"
-        message={`Simulasi: Unggah ${pickedFile} secara anonim ke konselor?`}
-        confirmLabel="Ya, Unggah"
-        cancelLabel="Batal"
-        onClose={() => setPickedFile(null)}
-        onConfirm={() => {
-          onSendMessage(`[Lampiran Dokumen Anonim: ${pickedFile}]`);
-        }}
       />
 
     </div>

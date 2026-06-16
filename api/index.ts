@@ -128,20 +128,19 @@ app.get("/api/chat/history", async (req, res) => {
 // Chat Send
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message, studentId } = req.body;
+    const { message, studentId, timestamp } = req.body;
     if (!message) {
       return res.status(400).json({ error: "Message content is required" });
     }
 
     const currentStudentId = studentId || "Anonimus_8891";
-    const timestampString =
-      new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) + " WIB";
+    const ts = timestamp || String(Date.now());
 
     const userMsgId = `msg-${currentStudentId}-${Date.now()}`;
     await pool.query(
       `INSERT INTO messages (id, session_id, role, text, timestamp) VALUES ($1, $2, 'user', $3, $4)
        ON CONFLICT (id) DO NOTHING`,
-      [userMsgId, currentStudentId, message, timestampString]
+      [userMsgId, currentStudentId, message, ts]
     );
 
     await pool.query(
@@ -173,21 +172,20 @@ app.get("/api/counselor/queue", async (_req, res) => {
 // Counselor Send Message
 app.post("/api/counselor/message", async (req, res) => {
   try {
-    const { studentId, text } = req.body;
+    const { studentId, text, timestamp } = req.body;
     if (!studentId || !text) {
       return res.status(400).json({ error: "studentId and text are required" });
     }
 
-    const timestampString =
-      new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) + " WIB";
+    const ts = timestamp || String(Date.now());
     const msgId = `cmsg-${studentId}-${Date.now()}`;
 
     await pool.query(
       `INSERT INTO messages (id, session_id, role, text, timestamp) VALUES ($1, $2, 'model', $3, $4)`,
-      [msgId, studentId, text, timestampString]
+      [msgId, studentId, text, ts]
     );
 
-    res.json({ success: true, message: { id: msgId, role: "model", text, timestamp: timestampString } });
+    res.json({ success: true, message: { id: msgId, role: "model", text, timestamp: ts } });
   } catch (error) {
     console.error("Error sending counselor message:", error);
     res.status(500).json({ error: "Failed to send message" });

@@ -172,17 +172,13 @@ export default function App() {
 
   // Student messaging — save locally and persist to DB (no auto-response)
   const handleSendMessage = async (text: string) => {
-    const timestampString = new Date().toLocaleTimeString("id-ID", {
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZone: "Asia/Jakarta",
-    }) + " WIB";
+    const timestamp = String(Date.now());
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       text: text,
-      timestamp: timestampString,
+      timestamp,
     };
 
     const updatedHistory = [...messages, userMessage];
@@ -197,6 +193,7 @@ export default function App() {
         body: JSON.stringify({
           message: text,
           studentId: studentId,
+          timestamp,
         }),
       });
     } catch {

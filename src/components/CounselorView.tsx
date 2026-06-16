@@ -36,6 +36,16 @@ export default function CounselorView({
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  function formatTimestamp(ts: string): string {
+    const ms = Number(ts);
+    if (isNaN(ms)) return ts;
+    return new Date(ms).toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Jakarta",
+    }) + " WIB";
+  }
+
   // Fetch queue from API
   const fetchQueue = useCallback(async () => {
     try {
@@ -105,14 +115,13 @@ export default function CounselorView({
     e.preventDefault();
     if (!inputText.trim()) return;
 
-    const timestampString =
-      new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" }) + " WIB";
+    const timestamp = String(Date.now());
 
     const modelMessage: Message = {
       id: Date.now().toString(),
       role: "model",
       text: inputText.trim(),
-      timestamp: timestampString,
+      timestamp,
     };
 
     // Optimistic local update
@@ -124,7 +133,7 @@ export default function CounselorView({
       await fetch("/api/counselor/message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentId: selectedStudentId, text: modelMessage.text }),
+        body: JSON.stringify({ studentId: selectedStudentId, text: modelMessage.text, timestamp }),
       });
     } catch {
       console.warn("Counselor message API failed, saved locally.");
@@ -333,7 +342,7 @@ export default function CounselorView({
                   >
                     <p className="whitespace-pre-line leading-relaxed">{msg.text}</p>
                     <span className="block text-right text-[9px] text-charcoal-muted mt-1">
-                      {msg.timestamp}
+                      {formatTimestamp(msg.timestamp)}
                     </span>
                   </div>
                 </div>
