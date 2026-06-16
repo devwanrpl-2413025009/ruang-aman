@@ -229,8 +229,8 @@ export default function ChatView({
 
         {/* Floating Suggested Responses to keep user interactive */}
         {messages.length < 5 && (
-          <div className="px-6 py-2 bg-white flex flex-wrap gap-2 border-t border-outline-variant/10">
-            <span className="text-[10px] text-outline font-mono uppercase shrink-0 self-center">Pintas Curhat:</span>
+          <div className="px-4 md:px-6 py-2 bg-white flex flex-nowrap md:flex-wrap gap-2 overflow-x-auto md:overflow-visible border-t border-outline-variant/10 scrollbar-hide">
+            <span className="text-[10px] text-outline font-mono uppercase shrink-0 self-center sticky left-0 bg-white z-10 pr-1">Pintas Curhat:</span>
             <button
               onClick={() => {
                 setInputText("Saya sangat cemas dengan skripsi dan tugas akhir akhir-akhir ini, tidak sanggup mengerjakannya lagi.");
@@ -298,9 +298,12 @@ export default function ChatView({
             </button>
           </form>
 
-          <div className="text-center mt-2.5">
-            <p className="font-sans text-[10px] text-charcoal-muted leading-none">
-              Tekan <kbd className="font-mono bg-background-soft px-1.5 py-0.5 rounded font-bold border">Enter</kbd> untuk mengirim. Sesi konseling otomatis ditutup setelah 30 menit tidak aktif demi keamanan.
+          <div className="text-center mt-2 px-1">
+            <p className="font-sans text-[10px] text-charcoal-muted leading-relaxed">
+              <span className="sm:hidden">Tekan Enter untuk kirim. Sesi ditutup setelah 30 menit.</span>
+              <span className="hidden sm:inline">
+                Tekan <kbd className="font-mono bg-background-soft px-1.5 py-0.5 rounded font-bold border">Enter</kbd> untuk mengirim. Sesi konseling otomatis ditutup setelah 30 menit tidak aktif demi keamanan.
+              </span>
             </p>
           </div>
         </div>

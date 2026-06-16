@@ -91,6 +91,14 @@ html.dark .hover\:bg-sage-light\/25:hover { background-color: rgba(84, 98, 90, 0
 
 html.dark .hover\:text-charcoal-dark:hover { color: #f1f5f9; }
 
+html.dark .bg-sage-light { background-color: #2d3a35; }
+
+html.dark .bg-\[#e3efff\] { background-color: #1e2a3a; }
+
+html.dark .bg-\[#f8fbfc\] { background-color: #0f172a; }
+
+html.dark .bg-\[#fbfdfd\] { background-color: #0f172a; }
+
 /* ─── Custom styles for animations & bento ───────────────────────────────── */
 @layer utilities {
   .safe-shadow {
