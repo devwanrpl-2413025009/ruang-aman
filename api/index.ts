@@ -103,12 +103,6 @@ app.get("/api/chat/history", async (req, res) => {
   try {
     const studentId = (req.query.studentId as string) || "Anonimus_8891";
 
-    await pool.query(
-      `INSERT INTO sessions (id, name, status) VALUES ($1, $1, 'active')
-       ON CONFLICT (id) DO NOTHING`,
-      [studentId]
-    );
-
     const result = await pool.query(
       `SELECT id, role, text, timestamp FROM messages WHERE session_id = $1 ORDER BY created_at ASC`,
       [studentId]
