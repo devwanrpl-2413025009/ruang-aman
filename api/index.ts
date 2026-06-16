@@ -54,6 +54,9 @@ async function initSchema() {
     )
   `);
   await pool.query(`
+    ALTER TABLE messages ADD COLUMN IF NOT EXISTS read_at TIMESTAMP
+  `);
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS counselors (
       nip VARCHAR(20) PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
@@ -102,15 +105,25 @@ app.get("/api/health", (_req, res) => {
 app.get("/api/chat/history", async (req, res) => {
   try {
     const studentId = (req.query.studentId as string) || "Anonimus_8891";
+    const isCounselor = req.query.counselor === "true";
+
+    // Auto-mark messages as read based on who is fetching
+    if (isCounselor) {
+      await pool.query(
+        `UPDATE messages SET read_at = NOW() WHERE session_id = $1 AND role = 'user' AND read_at IS NULL`,
+        [studentId]
+      );
+    } else {
+      await pool.query(
+        `UPDATE messages SET read_at = NOW() WHERE session_id = $1 AND role = 'model' AND read_at IS NULL`,
+        [studentId]
+      );
+    }
 
     const result = await pool.query(
-      `SELECT id, role, text, timestamp FROM messages WHERE session_id = $1 ORDER BY created_at ASC`,
+      `SELECT id, role, text, timestamp, read_at FROM messages WHERE session_id = $1 ORDER BY created_at ASC`,
       [studentId]
     );
-
-    if (result.rows.length === 0) {
-      return res.json({ messages: [] });
-    }
 
     res.json({ messages: result.rows });
   } catch (error) {

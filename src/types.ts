@@ -14,6 +14,7 @@ export interface Message {
   text: string;
   timestamp: string;
   isPending?: boolean;
+  read_at?: string | null;
 }
 
 export interface StudentSession {

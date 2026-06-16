@@ -3,7 +3,8 @@ import {
   Users, 
   Clock, 
   Send, 
-  MessageSquare, 
+  MessageSquare,
+  CheckCheck,
 } from "lucide-react";
 import { Message, StudentSession } from "../types";
 
@@ -68,7 +69,7 @@ export default function CounselorView({
   const fetchStudentMessages = useCallback(async () => {
     if (!selectedStudentId) return;
     try {
-      const res = await fetch(`/api/chat/history?studentId=${selectedStudentId}`);
+      const res = await fetch(`/api/chat/history?studentId=${selectedStudentId}&counselor=true`);
       if (res.ok) {
         const data = await res.json();
         if (data.messages) {
@@ -378,8 +379,11 @@ export default function CounselorView({
                     }`}
                   >
                     <p className="whitespace-pre-line leading-relaxed">{msg.text}</p>
-                    <span className="block text-right text-[9px] text-charcoal-muted mt-1">
+                    <span className="flex items-center justify-end gap-1 text-[9px] text-charcoal-muted mt-1">
                       {formatTimestamp(msg.timestamp)}
+                      {isCounselor && (
+                        <CheckCheck className={`w-3 h-3 ${msg.read_at ? "text-blue-500" : "text-sage-primary"}`} />
+                      )}
                     </span>
                   </div>
                 </div>

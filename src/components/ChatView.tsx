@@ -205,7 +205,9 @@ export default function ChatView({
 
                     <span className="text-[10px] text-charcoal-muted mt-0.5 mx-1.5 flex items-center gap-1">
                       {formatTimestamp(msg.timestamp)}
-                      {isUser && <CheckCheck className="w-3 h-3 text-sage-primary" />}
+                      {isUser && !msg.isPending && (
+                        <CheckCheck className={`w-3 h-3 ${msg.read_at ? "text-blue-500" : "text-sage-primary"}`} />
+                      )}
                     </span>
                   </div>
                 </div>
