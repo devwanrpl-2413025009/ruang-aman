@@ -37,6 +37,9 @@ export default function CounselorView({
   const [selectedMessages, setSelectedMessages] = useState<Message[]>(propMessages);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
+  const prevSelectedStudentId = useRef(selectedStudentId);
+  const prevMessagesLength = useRef(selectedMessages.length);
 
   function formatTimestamp(ts: string): string {
     const ms = Number(ts);
@@ -94,17 +97,49 @@ export default function CounselorView({
     return () => clearInterval(interval);
   }, [selectedStudentId, fetchStudentMessages]);
 
-  // Auto-scroll only if user was near bottom
+  // Auto-scroll only when a new message arrives or student changes
   const counselorChatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = counselorChatRef.current;
     if (!container) return;
+
+    const msgLen = selectedMessages.length;
+
+    // First render — scroll to bottom instantly
+    if (isFirstRender.current) {
+      chatEndRef.current?.scrollIntoView({ behavior: "instant" });
+      isFirstRender.current = false;
+      prevSelectedStudentId.current = selectedStudentId;
+      prevMessagesLength.current = msgLen;
+      return;
+    }
+
+    // Student changed — scroll to bottom instantly
+    const studentChanged = selectedStudentId !== prevSelectedStudentId.current;
+    if (studentChanged) {
+      chatEndRef.current?.scrollIntoView({ behavior: "instant" });
+      prevSelectedStudentId.current = selectedStudentId;
+      prevMessagesLength.current = msgLen;
+      return;
+    }
+
+    // Only scroll if there's actually a new message
+    const hasNewMessage = msgLen > prevMessagesLength.current;
+    if (!hasNewMessage) {
+      prevMessagesLength.current = msgLen;
+      return;
+    }
+
     const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
-    if (isNearBottom) {
+    const isOwnMessage = msgLen > 0 && selectedMessages[msgLen - 1].role === "model";
+
+    if (isNearBottom || isOwnMessage) {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [selectedMessages]);
+
+    prevMessagesLength.current = msgLen;
+  }, [selectedMessages, selectedStudentId]);
 
   // Update selectedMessages when propMessages change (for current studentId)
   useEffect(() => {

@@ -34,6 +34,7 @@ export default function ChatView({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const prevMessagesLength = useRef(messages.length);
+  const isFirstRender = useRef(true);
 
   // Auto scroll only when a new message arrives and user is at bottom or it's their own message
   useEffect(() => {
@@ -41,14 +42,22 @@ export default function ChatView({
     if (!container) return;
 
     const msgLen = messages.length;
-    const hasNewMessage = msgLen > prevMessagesLength.current;
 
+    // First render — scroll to bottom instantly (no smooth animation on load)
+    if (isFirstRender.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+      isFirstRender.current = false;
+      prevMessagesLength.current = msgLen;
+      return;
+    }
+
+    const hasNewMessage = msgLen > prevMessagesLength.current;
     if (!hasNewMessage) {
       prevMessagesLength.current = msgLen;
       return;
     }
 
-    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
+    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
     const isOwnMessage = msgLen > 0 && messages[msgLen - 1].role === "user";
 
     if (isNearBottom || isOwnMessage) {
