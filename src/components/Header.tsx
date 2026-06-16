@@ -110,7 +110,7 @@ export default function Header({
           {/* Settings / Profile Trigger */}
           <button
             onClick={() => onNavigate(AppView.SETTINGS)}
-            className={`p-2.5 rounded-full transition-all flex items-center justify-center border cursor-pointer ${
+            className={`p-2.5 min-w-[44px] min-h-[44px] rounded-full transition-all flex items-center justify-center border cursor-pointer ${
               currentView === AppView.SETTINGS
                 ? "bg-sage-light text-sage-primary border-sage-primary"
                 : "bg-white hover:bg-background-soft border-outline-variant/30 text-charcoal-muted"

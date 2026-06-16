@@ -28,6 +28,7 @@ export default function CounselorView({
   const [counselorOnline, setCounselorOnline] = useState(true);
   const [inputText, setInputText] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState(studentId);
+  const [showMobileQueue, setShowMobileQueue] = useState(false);
 
   // API-driven queue and messages
   const [queue, setQueue] = useState<QueueItem[]>([]);
@@ -143,10 +144,21 @@ export default function CounselorView({
   }));
 
   return (
-    <div className="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full px-4 py-6 md:py-8 h-[calc(100vh-120px)] min-h-[600px] gap-6">
+    <div className="flex-grow flex flex-col md:flex-row max-w-7xl mx-auto w-full px-4 py-6 md:py-8 h-[calc(100vh-200px)] md:h-[calc(100vh-120px)] min-h-[50vh] md:min-h-[600px] gap-6">
       
       {/* 1. Counselor Sidebar Panel (Left split, 1/3 cols) */}
-      <section className="w-full md:w-80 flex flex-col bg-white rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden shrink-0">
+      {showMobileQueue && (
+        <div
+          className="md:hidden fixed inset-0 z-30 bg-black/30 backdrop-blur-sm"
+          onClick={() => setShowMobileQueue(false)}
+        />
+      )}
+      <section
+        className={`
+          ${showMobileQueue ? "max-md:fixed max-md:inset-4 max-md:z-40 max-md:rounded-2xl" : "max-md:hidden"}
+          md:flex w-full md:w-80 flex-col bg-white rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden shrink-0
+        `}
+      >
         <div className="p-5 border-b border-outline-variant/20 bg-[#f8fbfc]">
           <div className="flex justify-between items-start mb-4">
             <div>
@@ -157,9 +169,17 @@ export default function CounselorView({
                 Antrean Curhat Kampus
               </p>
             </div>
-            <span className="bg-sage-light text-sage-dark font-sans text-xs font-bold px-3 py-1 rounded-full">
-              {queue.length} Terdaftar
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="bg-sage-light text-sage-dark font-sans text-xs font-bold px-3 py-1 rounded-full">
+                {queue.length} Terdaftar
+              </span>
+              <button
+                onClick={() => setShowMobileQueue(false)}
+                className="md:hidden p-1.5 min-w-[44px] min-h-[44px] rounded-full hover:bg-background-soft text-charcoal-muted cursor-pointer flex items-center justify-center"
+              >
+                ✕
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-outline-variant/20 shadow-inner">
@@ -257,7 +277,15 @@ export default function CounselorView({
       {/* 2. Chat Workspace */}
       <section className="flex-1 flex flex-col bg-white rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden h-full">
         <div className="p-4 bg-[#f8fbfc] border-b border-outline-variant/20 flex justify-between items-center">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowMobileQueue(true)}
+              className="md:hidden p-2 min-w-[44px] min-h-[44px] rounded-lg hover:bg-white text-charcoal-muted hover:text-sage-primary transition-colors cursor-pointer flex items-center justify-center"
+              title="Buka antrean"
+            >
+              <Users className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-display font-extrabold text-blue-600 shadow-inner">
                S
             </div>
@@ -271,7 +299,8 @@ export default function CounselorView({
               </p>
             </div>
           </div>
-        </div>
+          </div>
+          </div>
 
         <div ref={counselorChatRef} className="flex-1 p-5 overflow-y-auto space-y-4 bg-[#fbfdfd]/60">
           <div className="flex justify-center">

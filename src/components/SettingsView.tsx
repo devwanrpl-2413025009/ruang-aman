@@ -107,10 +107,10 @@ export default function SettingsView({
           </div>
 
           {/* Segmented Picker */}
-          <div className="flex bg-background-soft p-1 rounded-full border border-outline-variant/20 self-start sm:self-auto shrink-0 select-none">
+          <div className="flex w-full sm:w-auto bg-background-soft p-1 rounded-full border border-outline-variant/20 self-start sm:self-auto shrink-0 select-none">
             <button
               onClick={() => handleTextSizeChange("normal")}
-              className={`px-4 py-2 rounded-full font-sans text-xs font-semibold tracking-wide transition-all cursor-pointer ${
+              className={`flex-1 min-w-0 px-3 md:px-4 py-2 rounded-full font-sans text-xs font-semibold tracking-wide transition-all cursor-pointer ${
                 settings.textSize === "normal"
                   ? "bg-white text-charcoal-dark shadow-sm"
                   : "text-charcoal-muted hover:text-charcoal-dark"
@@ -120,7 +120,7 @@ export default function SettingsView({
             </button>
             <button
               onClick={() => handleTextSizeChange("besar")}
-              className={`px-4 py-2 rounded-full font-sans text-xs font-semibold tracking-wide transition-all cursor-pointer ${
+              className={`flex-1 min-w-0 px-3 md:px-4 py-2 rounded-full font-sans text-xs font-semibold tracking-wide transition-all cursor-pointer ${
                 settings.textSize === "besar"
                   ? "bg-white text-charcoal-dark shadow-sm"
                   : "text-charcoal-muted hover:text-charcoal-dark"
@@ -130,7 +130,7 @@ export default function SettingsView({
             </button>
             <button
               onClick={() => handleTextSizeChange("ekstra-besar")}
-              className={`px-4 py-2 rounded-full font-sans text-xs font-semibold tracking-wide transition-all cursor-pointer ${
+              className={`flex-1 min-w-0 px-3 md:px-4 py-2 rounded-full font-sans text-xs font-semibold tracking-wide transition-all cursor-pointer ${
                 settings.textSize === "ekstra-besar"
                   ? "bg-white text-charcoal-dark shadow-sm"
                   : "text-charcoal-muted hover:text-charcoal-dark"

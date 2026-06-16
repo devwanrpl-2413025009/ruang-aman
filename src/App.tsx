@@ -8,6 +8,7 @@ import SelfHelpView from "./components/SelfHelpView";
 import CounselorView from "./components/CounselorView";
 import SettingsView from "./components/SettingsView";
 import CounselorLogin from "./components/CounselorLogin";
+import MobileNav from "./components/MobileNav";
 import FeedbackModal from "./components/FeedbackModal";
 import { ShieldAlert, Heart, Phone, X, ShieldCheck } from "lucide-react";
 
@@ -274,7 +275,7 @@ export default function App() {
       />
 
       {/* Main Workspace Frame */}
-      <main className="flex-grow flex flex-col p-4 md:p-8 max-w-7xl mx-auto w-full">
+      <main className="flex-grow flex flex-col p-4 md:p-8 pb-[72px] md:pb-8 max-w-7xl mx-auto w-full">
         {currentView === AppView.HOME && (
           <LandingView
             studentId={studentId}
@@ -326,6 +327,14 @@ export default function App() {
 
       {/* Shared Footline Attribution */}
       <Footer onNavigate={setCurrentView} />
+
+      {/* Mobile Bottom Navigation (md:hidden) */}
+      <MobileNav
+        currentView={currentView}
+        onNavigate={handleRoleNavigate}
+        onOpenEmergency={() => setEmergencyOpen(true)}
+        userRole={userRole}
+      />
 
       {/* Modern Glassmorphic Emergency hotline Overlay Modal */}
       {emergencyOpen && (

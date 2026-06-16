@@ -87,7 +87,7 @@ export default function ChatView({
   };
 
   return (
-    <div className="flex-grow flex flex-col max-w-5xl mx-auto w-full px-4 h-[calc(100vh-100px)] min-h-[600px]">
+    <div className="flex-grow flex flex-col max-w-5xl mx-auto w-full px-4 h-[calc(100vh-180px)] md:h-[calc(100vh-100px)] min-h-[50vh] md:min-h-[600px]">
       {/* Dynamic Chat Frame */}
       <div className="flex-grow flex flex-col bg-white rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden relative my-4 h-full">
         
@@ -115,7 +115,7 @@ export default function ChatView({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowClearConfirm(true)}
-              className="text-charcoal-muted hover:text-coral-panic transition-colors p-2.5 rounded-full hover:bg-coral-pink flex items-center gap-2 group cursor-pointer"
+              className="text-charcoal-muted hover:text-coral-panic transition-colors p-2.5 min-w-[44px] min-h-[44px] rounded-full hover:bg-coral-pink flex items-center gap-2 group cursor-pointer"
               title="Akhiri Sesi &amp; Hapus Riwayat"
               id="btn-clear-chat"
             >
