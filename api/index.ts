@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type Request, type Response, type NextFunction } from "express";
 import crypto from "crypto";
 import ws from "ws";
 
@@ -75,9 +75,21 @@ async function seedCounselors() {
   );
 }
 
-initSchema().then(() => seedCounselors()).catch((err) => {
-  console.warn("Schema/seed init failed:", err);
-});
+let schemaReady: Promise<void> | null = null;
+
+function ensureSchema(_req: Request, res: Response, next: NextFunction) {
+  if (!schemaReady) {
+    schemaReady = initSchema().then(() => seedCounselors()).catch((err) => {
+      console.error("Schema/seed init failed:", err);
+      throw err;
+    });
+  }
+  schemaReady.then(() => next()).catch(() => {
+    res.status(500).json({ error: "Database initialization failed" });
+  });
+}
+
+app.use("/api", ensureSchema);
 
 // ─── API Routes ──────────────────────────────────────────────────────────────
 
