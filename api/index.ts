@@ -275,26 +275,6 @@ app.post("/api/counselor/release-session", async (req, res) => {
   }
 });
 
-// Counselor Takeover Session
-app.post("/api/counselor/takeover", async (req, res) => {
-  try {
-    const { studentId, counselor_nip } = req.body;
-    if (!studentId || !counselor_nip) {
-      return res.status(400).json({ error: "studentId and counselor_nip are required" });
-    }
-
-    await pool.query(
-      `UPDATE sessions SET counselor_nip = $1 WHERE id = $2`,
-      [counselor_nip, studentId]
-    );
-
-    res.json({ success: true, message: "Session taken over" });
-  } catch (error) {
-    console.error("Error taking over session:", error);
-    res.status(500).json({ error: "Failed to take over session" });
-  }
-});
-
 // Counselor Login
 app.post("/api/counselor/login", async (req, res) => {
   try {

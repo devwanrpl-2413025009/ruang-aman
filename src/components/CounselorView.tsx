@@ -210,20 +210,6 @@ export default function CounselorView({
     }
   };
 
-  const handleTakeover = async () => {
-    try {
-      await fetch("/api/counselor/takeover", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ studentId: selectedStudentId, counselor_nip: counselorNip }),
-      });
-      setSessionCounselorNip(counselorNip);
-      setSessionCounselorName(counselorName);
-    } catch {
-      console.warn("Failed to take over session");
-    }
-  };
-
   const displayedMessages = selectedStudentId === studentId
     ? (selectedMessages.length > 0 ? selectedMessages : propMessages)
     : selectedMessages;
@@ -416,12 +402,6 @@ export default function CounselorView({
                   <span className="text-[10px] font-mono font-bold text-amber-600 flex items-center gap-1">
                     <Lock className="w-3 h-3" /> Ditangani oleh {sessionCounselorName || "Konselor lain"}
                   </span>
-                  <button
-                    onClick={handleTakeover}
-                    className="text-[10px] font-mono font-bold text-blue-600 hover:text-blue-800 underline transition-colors cursor-pointer"
-                  >
-                    Ambil Alih
-                  </button>
                 </p>
               )}
             </div>
