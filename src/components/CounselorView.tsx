@@ -106,7 +106,7 @@ export default function CounselorView({
     if (!inputText.trim()) return;
 
     const timestampString =
-      new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) + " WIB";
+      new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" }) + " WIB";
 
     const modelMessage: Message = {
       id: Date.now().toString(),

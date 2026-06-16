@@ -175,6 +175,7 @@ export default function App() {
     const timestampString = new Date().toLocaleTimeString("id-ID", {
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "Asia/Jakarta",
     }) + " WIB";
 
     const userMessage: Message = {

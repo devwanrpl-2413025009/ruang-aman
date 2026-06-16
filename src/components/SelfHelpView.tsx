@@ -111,7 +111,7 @@ export default function SelfHelpView({ studentId }: SelfHelpViewProps) {
 
     const feeling = `Intensitas ${newIntensity}: ${newFeeling.trim()}`;
     const wellnessTip = "Grounding: Ambil nafas lembut 4-4-4, regangkan pundak, katakan 'Aku aman dan mampu melalui ini.'";
-    const date = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) + " WIB";
+    const date = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" }) + " WIB";
 
     try {
       const res = await fetch("/api/journals", {
