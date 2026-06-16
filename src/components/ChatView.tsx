@@ -33,15 +33,29 @@ export default function ChatView({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const prevMessagesLength = useRef(messages.length);
 
-  // Auto scroll to bottom only if user was already near the bottom
+  // Auto scroll only when a new message arrives and user is at bottom or it's their own message
   useEffect(() => {
     const container = chatContainerRef.current;
     if (!container) return;
-    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 150;
-    if (isNearBottom) {
+
+    const msgLen = messages.length;
+    const hasNewMessage = msgLen > prevMessagesLength.current;
+
+    if (!hasNewMessage) {
+      prevMessagesLength.current = msgLen;
+      return;
+    }
+
+    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
+    const isOwnMessage = msgLen > 0 && messages[msgLen - 1].role === "user";
+
+    if (isNearBottom || isOwnMessage) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
+
+    prevMessagesLength.current = msgLen;
   }, [messages]);
 
   // Adjust textarea height on text change
