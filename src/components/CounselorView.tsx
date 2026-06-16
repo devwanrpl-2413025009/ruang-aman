@@ -10,6 +10,7 @@ import { Message, StudentSession } from "../types";
 interface CounselorViewProps {
   studentId: string;
   messages: Message[];
+  counselorName: string;
   onLogout: () => void;
 }
 
@@ -23,6 +24,7 @@ interface QueueItem {
 export default function CounselorView({
   studentId,
   messages: propMessages,
+  counselorName,
   onLogout,
 }: CounselorViewProps) {
   const [counselorOnline, setCounselorOnline] = useState(true);
@@ -201,7 +203,7 @@ export default function CounselorView({
               </div>
               <div>
                 <p className="font-sans font-bold text-xs text-charcoal-dark leading-none">
-                  Bu Sarah, M.Pd.
+                  {counselorName || "Konselor BK"}
                 </p>
                 <p className="text-[10px] text-charcoal-muted mt-1 font-medium">
                   Dosen BK Kampus Online
