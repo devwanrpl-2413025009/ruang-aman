@@ -28,7 +28,7 @@ export default function Header({
           id="nav-logo"
         >
           <img
-            src="/assets/logo-unila.png"
+            src="/logo-unila.png"
             alt="Logo Unila"
             className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border border-sage-light"
           />

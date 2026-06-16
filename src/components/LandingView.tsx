@@ -32,7 +32,7 @@ export default function LandingView({
       >
         <div className="flex items-center gap-3">
           <img
-            src="/assets/logo-unila.png"
+            src="/logo-unila.png"
             alt="Logo Universitas Lampung"
             className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-sage-light"
           />
