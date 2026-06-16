@@ -131,16 +131,17 @@ app.post("/api/chat", async (req, res) => {
     const ts = timestamp || String(Date.now());
 
     const userMsgId = `msg-${currentStudentId}-${Date.now()}`;
-    await pool.query(
-      `INSERT INTO messages (id, session_id, role, text, timestamp) VALUES ($1, $2, 'user', $3, $4)
-       ON CONFLICT (id) DO NOTHING`,
-      [userMsgId, currentStudentId, message, ts]
-    );
 
     await pool.query(
       `INSERT INTO sessions (id, name, status) VALUES ($1, $1, 'active')
        ON CONFLICT (id) DO UPDATE SET status = 'active'`,
       [currentStudentId]
+    );
+
+    await pool.query(
+      `INSERT INTO messages (id, session_id, role, text, timestamp) VALUES ($1, $2, 'user', $3, $4)
+       ON CONFLICT (id) DO NOTHING`,
+      [userMsgId, currentStudentId, message, ts]
     );
 
     res.json({ success: true });
